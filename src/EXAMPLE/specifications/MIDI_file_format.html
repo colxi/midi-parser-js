@@ -1,0 +1,1063 @@
+<html>
+
+<head>
+</head>
+
+<body>
+    <h1>"MIDI File Format"</h1>
+    <div class="Content">
+        <table border="0" cellspacing="0" cellpadding="0" class="Layout">
+            <tbody>
+                <tr>
+                    <td>
+                        <p>Standard MIDI files provide a common file format used by most musical software and hardware devices to store song information including the title, track names, and most importantly what instruments to use and the sequence of musical events, such as notes and instrument control information needed to play back the song. This standardization allows one software package to create and save files that can later be loaded and edited by another completely different program, even on a different type of computer. Almost every software music sequencer is capable of loading and saving standard MIDI files.</p>
+                        <h1>File Format Specification</h1>
+                        <h1>Data Formats</h1>All data values are stored in
+                        <font color="#000000">Big-Endian</font> (most significant byte first) format. Also, many values are stored in a variable-length format which may use one or more bytes per value. Variable-length values use the lower 7 bits of a byte for data and the top bit to signal a following data byte. If the top bit is set to 1, then another value byte follows. Below is a table of examples to help demonstrate how variable length values are used.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <center>
+            <table cellspacing="1" cellpadding="4">
+                <tbody>
+                    <tr bgcolor="#999999">
+                        <td colspan="2">
+                            <center><b>Value</b></center>
+                        </td>
+                        <td colspan="2">
+                            <center><b>Variable-Length</b></center>
+                        </td>
+                    </tr>
+                    <tr bgcolor="#999999">
+                        <td>Hex</td>
+                        <td>Bin</td>
+                        <td>Hex</td>
+                        <td>Bin</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>00</td>
+                        <td>00000000</td>
+                        <td>00</td>
+                        <td>
+                            <font color="#f00000">0</font>0000000</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>C8</td>
+                        <td>11001000</td>
+                        <td>8148</td>
+                        <td>
+                            <font color="#008000">1</font>0000001
+                            <font color="#f00000">0</font>1001000</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>100000</td>
+                        <td>00010000 00000000 00000000</td>
+                        <td>C08000</td>
+                        <td>
+                            <font color="#00a000">1</font>1000000
+                            <font color="#008000">1</font>0000000
+                            <font color="#f00000">0</font>0000000</td>
+                    </tr>
+                </tbody>
+            </table>
+        </center>
+        <small>Example values and their variable-length equivalents.<br></small>
+        <p>A variable-length value may use a maximum of 4 bytes. This means the maximum value that can be represented is 0x0FFFFFFF (represented as 0xFF, 0xFF, 0xFF, 0x7F).
+        </p>
+        <h1>File Structure</h1>MIDI files are organized into data chunks. Each chunk is prefixed with an 8 byte header: 4 byte ID string used to identify the type of chunk followed by a 4 byte size which defines the chunk's length as number of bytes following this chunk's header.
+        <h1>Header Chunk</h1>The header chunk contains information about the entire song including MIDI format type, number of tracks and timing division. There is only one header chunk per standard MIDI file and it always comes first. Before describing each element of the header chunk, here is a chart to help give an overview of the chunk's organization.
+        <p>
+        </p>
+        <center>
+            <table cellspacing="1" cellpadding="4">
+                <tbody>
+                    <tr bgcolor="#999999">
+                        <td><b>Offset</b></td>
+                        <td><b>Length</b></td>
+                        <td><b>Type</b></td>
+                        <td><b>Description</b></td>
+                        <td><b>Value</b></td>
+                    </tr>
+                    <tr bgcolor="#b0b0b0">
+                        <td>0x00</td>
+                        <td>4</td>
+                        <td>char[4]</td>
+                        <td>chunk ID</td>
+                        <td>"MThd" (0x4D546864)</td>
+                    </tr>
+                    <tr bgcolor="#b0b0b0">
+                        <td>0x04</td>
+                        <td>4</td>
+                        <td>dword</td>
+                        <td>chunk size</td>
+                        <td>6 (0x00000006)</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>0x08</td>
+                        <td>2</td>
+                        <td>word</td>
+                        <td>format type</td>
+                        <td>0 - 2</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>0x10</td>
+                        <td>2</td>
+                        <td>word</td>
+                        <td>number of tracks</td>
+                        <td>1 - 65,535</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>0x12</td>
+                        <td>2</td>
+                        <td>word</td>
+                        <td>time division</td>
+                        <td>see following text</td>
+                    </tr>
+                </tbody>
+            </table><small>MIDI Header Chunk Format</small> </center>
+        <p><i>Chunk ID and Size</i>
+            <br>The chunk ID is always "MThd" (0x4D546864) and the size is always 6 because the header chunk always contains the same 3 word values.
+        </p>
+        <p><i>Format Type</i>
+            <br>The first word describes the MIDI format type. It can be a value of 0, 1 or 2 and describes what how the following track information is to be interpreted. A type 0 MIDI file has one track that contains all of the MIDI events for the entire song, including the song title, time signature, tempo and music events. A type 1 MIDI file should have two or more tracks. The first, by convention, contains song information such as the title, time signature, tempo, etc. (more detail in Track Chunk section). The second and following tracks contain a title, musical event data, etc. specific to that track. This closely matches the organization of modern multi-track MIDI sequencers. A type 2 MIDI file is sort of a combination of the other two types. It contains multiple tracks, but each track represents a different sequence which may not necessarily be played simultaneously. This is meant to be used to save drum patterns, or other multi-pattern music sequences.
+        </p>
+        <p><i>Number of Tracks</i>
+            <br>The second word simply defines the number of track chunks that follow this header chunk. A type 0 MIDI file may only contain a value of 1, because they can only contain one track. Type 1 and 2 MIDI files may contain up to 65,536 (0xFFFF) tracks.
+        </p>
+        <p><i>Time Division</i>
+            <br>The third and final word in the MIDI header chunk is a bit more complicated than the first two. It contains the time division used to decode the track event delta times into "real" time. This value is represents either ticks per beat or frames per second. If the top bit of the word (bit mask 0x8000) is 0, the following 15 bits describe the time division in ticks per beat. Otherwise the following 15 bits (bit mask 0x7FFF) describe the time division in frames per second. Ticks per beat translate to the number of clock ticks or track delta positions (described in the Track Chunk section) in every quarter note of music. Common values range from 48 to 960, although newer sequencers go far beyond this range to ease working with MIDI and digital audio together. Frames per second is defined by breaking the remaining 15 bytes into two values. The top 7 bits (bit mask 0x7F00) define a value for the number of SMPTE frames and can be 24, 25, 29 (for 29.97 fps) or 30. The remaining byte (bit mask 0x00FF) defines how many clock ticks or track delta positions there are per frame. So a time division example of 0x9978 could be broken down into it's three parts: the top bit is one, so it is in SMPTE frames per second format, the following 7 bits have a value of 25 (0x19) and the bottom byte has a value of 120 (0x78). This means the example plays at 24 frames per second SMPTE time and has 120 ticks per frame.
+        </p>
+        <h1>Track Chunk</h1>Track chunks contain all of the information for an individual track including, track name and music events. Here is an overview of a track chunk's organization.
+        <p>
+        </p>
+        <center>
+            <table cellspacing="1" cellpadding="4">
+                <tbody>
+                    <tr bgcolor="#999999">
+                        <td><b>Offset</b></td>
+                        <td><b>Length</b></td>
+                        <td><b>Type</b></td>
+                        <td><b>Description</b></td>
+                        <td><b>Value</b></td>
+                    </tr>
+                    <tr bgcolor="#b0b0b0">
+                        <td>0x00</td>
+                        <td>4</td>
+                        <td>char[4]</td>
+                        <td>chunk ID</td>
+                        <td>"MTrk" (0x4D54726B)</td>
+                    </tr>
+                    <tr bgcolor="#b0b0b0">
+                        <td>0x04</td>
+                        <td>4</td>
+                        <td>dword</td>
+                        <td>chunk size</td>
+                        <td>see following text</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>0x08</td>
+                        <td colspan="4">
+                            <center>track event data (see following text)</center>
+                        </td>
+                    </tr>
+                </tbody>
+            </table><small>MIDI Track Chunk Format</small> </center>
+        <p><i>Chunk ID and Size</i>
+            <br>The chunk ID is always "MTrk" (0x4D54726B) and the size varies depending on the number of bytes used for all of the events contained in the track.
+        </p>
+        <p><i>Track Event Data</i>
+            <br>The track event data contains a stream of MIDI events that define information about the sequence and how it is played. The next section describes the different types of events.
+        </p>
+        <h1>MIDI Events</h1>Track events are used to describe all of the musical content of a MIDI file, from tempo changes to sequence and track titles to individual music events. Each event includes a delta time, event type and usually some event type specific data.
+        <p><i>Delta-Times</i>
+            <br>The event delta time is defined by a variable-length value. It determines when an event should be played relative to the track's last event. A delta time of 0 means that it should play simultaneously with the last event. A track's first event delta time defines the amount of time to wait before playing this first event. Events unaffected by time are still preceded by a delta time, but should always use a value of 0 and come first in the stream of track events. Examples of this type of event include track titles and copyright information. The most important thing to remember about delta times is that they are relative values, not absolute times. The actual time they represent is determined by a couple factors. The time division (defined in the MIDI header chunk) and the tempo (defined with a track event). If no tempo is define, 120 beats per minute is assumed.
+        </p>
+        <p><i>Types of Events</i>
+            <br>There are three types of events: MIDI Control Events, System Exclusive Events and Meta Events.
+        </p>
+        <p><i>MIDI Channel Events</i>
+            <br>Musical control information such as playing a note or adjusting a MIDI channel's modulation value are defined by MIDI Channel Events. Each MIDI Channel Event consists of a variable-length delta time (like all track events) and a two or three byte description which determines the MIDI channel it corresponds to, the type of event it is and one or two event type specific values. Below is a table illustrating how MIDI Channel Events are formatted.
+        </p>
+        <p>
+        </p>
+        <center>
+            <table cellspacing="1" cellpadding="4">
+                <tbody>
+                    <tr bgcolor="#999999">
+                        <td><b>Delta Time</b></td>
+                        <td><b>Event Type Value</b></td>
+                        <td><b>MIDI Channel</b></td>
+                        <td><b>Parameter 1</b></td>
+                        <td><b>Parameter 2</b></td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>variable-length</td>
+                        <td>4 bits</td>
+                        <td>4 bits</td>
+                        <td>1 byte</td>
+                        <td>1 byte</td>
+                    </tr>
+                </tbody>
+            </table><small>MIDI Channel Event Format</small> </center>
+        <p>MIDI Channel Events are the most common type of track event and usually make up the bulk of a MIDI file. The following table gives an overview of the seven MIDI Channel Events, listing their numeric value and parameters.
+        </p>
+        <p>
+        </p>
+        <center>
+            <table cellspacing="1" cellpadding="4">
+                <tbody>
+                    <tr bgcolor="#999999">
+                        <td><b>Event Type</b></td>
+                        <td><b>Value</b></td>
+                        <td><b>Parameter 1</b></td>
+                        <td><b>Parameter 2</b></td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>Note Off</td>
+                        <td>0x8</td>
+                        <td>note number</td>
+                        <td>velocity</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>Note On</td>
+                        <td>0x9</td>
+                        <td>note number</td>
+                        <td>velocity</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>Note Aftertouch</td>
+                        <td>0xA</td>
+                        <td>note number</td>
+                        <td>aftertouch value</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>Controller</td>
+                        <td>0xB</td>
+                        <td>controller number</td>
+                        <td>controller value</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>Program Change</td>
+                        <td>0xC</td>
+                        <td>program number</td>
+                        <td>not used</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>Channel Aftertouch</td>
+                        <td>0xD</td>
+                        <td>aftertouch value</td>
+                        <td>not used</td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>Pitch Bend</td>
+                        <td>0xE</td>
+                        <td>pitch value (LSB)</td>
+                        <td>pitch value (MSB)</td>
+                    </tr>
+                </tbody>
+            </table><small>MIDI Channel Events</small> </center>
+        <p>Although all of the MIDI Channel Events follow the same basic format, each one requires a bit of explanation. Below is a detailed description of each and how it is used.
+        </p>
+        <p>
+        </p>
+        <table width="100%">
+            <tbody>
+                <tr>
+                    <td width="20">&nbsp;</td>
+                    <td>
+                        <p><i>Note Off Event</i>
+                            <br>The Note Off Event is used to signal when a MIDI key is released. These events have two parameters identical to a Note On event. The note number specifies which of the 128 MIDI keys is being played and the velocity determines how fast/hard the key was released. The note number is normally used to specify which previously pressed key is being released and the velocity is usually ignored, but is sometimes used to adjust the slope of an instrument's release phase.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Note Off</b></td>
+                                        <td><b>MIDI Channel</b></td>
+                                        <td><b>Note Number</b></td>
+                                        <td><b>Velocity</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>8 (0x8)</td>
+                                        <td>0-15</td>
+                                        <td>0-127</td>
+                                        <td>0-127</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Note Off Event Value Ranges</small></center>
+                        <p><i>Note On Event</i>
+                            <br>The Note On Event is used to signal when a MIDI key is pressed. This type of event has two parameters. The note number that specifies which of the 128 MIDI keys is being played and the velocity determines how fast/hard the key is pressed. The note number is normally used to specify the instruments musical pitch and the velocity is usually used to specify the instruments playback volume and intensity.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Note On</b></td>
+                                        <td><b>MIDI Channel</b></td>
+                                        <td><b>Note Number</b></td>
+                                        <td><b>Velocity</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>9 (0x9)</td>
+                                        <td>0-15</td>
+                                        <td>0-127</td>
+                                        <td>0-127</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Note On Event Value Ranges</small></center>
+                        <p><i>Note Aftertouch Event </i>
+                            <br>The Note Aftertouch Event is used to indicate a pressure change on one of the currently pressed MIDI keys. It has two parameters. The note number of which key's pressure is changing and the aftertouch value which specifies amount of pressure being applied (0 = no pressure, 127 = full pressure). Note Aftertouch is used for extra expression of particular notes, often introducing or increasing some type of modulation during the instrument's sustain phase
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Note Aftertouch</b></td>
+                                        <td><b>MIDI Channel</b></td>
+                                        <td><b>Note Number</b></td>
+                                        <td><b>Amount</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>10 (0xA)</td>
+                                        <td>0-15</td>
+                                        <td>0-127</td>
+                                        <td>0-127</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Note Aftertouch Event Value Ranges</small></center>
+                        <p><i>Controller Event</i>
+                            <br>The Controller Event signals the change in a MIDI channels state. There are 128 controllers which define different attributes of the channel including volume, pan, modulation, effects, and more. This event type has two parameters. The controller number specifies which control is changing and the controller value defines it's new setting.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Controller</b></td>
+                                        <td><b>MIDI Channel</b></td>
+                                        <td><b>Controller Type</b></td>
+                                        <td><b>Value</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>11 (0xB)</td>
+                                        <td>0-15</td>
+                                        <td>0-127</td>
+                                        <td>0-127</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Controller Event Value Ranges</small></center>
+                        <p>Below is a list of the defined MIDI controller types.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Value</b></td>
+                                        <td><b>Controller Type</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>0 (0x00)</td>
+                                        <td>Bank Select</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>1 (0x01)</td>
+                                        <td>Modulation</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>2 (0x02)</td>
+                                        <td>Breath Controller</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>4 (0x04)</td>
+                                        <td>Foot Controller</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>5 (0x05)</td>
+                                        <td>Portamento Time</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>6 (0x06)</td>
+                                        <td>Data Entry (MSB)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>7 (0x07)</td>
+                                        <td>Main Volume</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>8 (0x08)</td>
+                                        <td>Balance</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>10 (0x0A)</td>
+                                        <td>Pan</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>11 (0x0B)</td>
+                                        <td>Expression Controller</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>12 (0x0C)</td>
+                                        <td>Effect Control 1</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>13 (0x0D)</td>
+                                        <td>Effect Control 2</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>16-19 (0x10-0x13)</td>
+                                        <td>General-Purpose Controllers 1-4</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>32-63 (0x20-0x3F)</td>
+                                        <td>LSB for controllers 0-31</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>64 (0x40)</td>
+                                        <td>Damper pedal (sustain)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>65 (0x41)</td>
+                                        <td>Portamento</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>66 (0x42)</td>
+                                        <td>Sostenuto</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>67 (0x43)</td>
+                                        <td>Soft Pedal</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>68 (0x44)</td>
+                                        <td>Legato Footswitch</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>69 (0x45)</td>
+                                        <td>Hold 2</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>70 (0x46)</td>
+                                        <td>Sound Controller 1 (default: Timber Variation)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>71 (0x47)</td>
+                                        <td>Sound Controller 2 (default: Timber/Harmonic Content)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>72 (0x48)</td>
+                                        <td>Sound Controller 3 (default: Release Time)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>73 (0x49)</td>
+                                        <td>Sound Controller 4 (default: Attack Time)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>74-79 (0x4A-0x4F)</td>
+                                        <td>Sound Controller 6-10</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>80-83 (0x50-0x53)</td>
+                                        <td>General-Purpose Controllers 5-8</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>84 (0x54)</td>
+                                        <td>Portamento Control</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>91 (0x5B)</td>
+                                        <td>Effects 1 Depth (formerly External Effects Depth)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>92 (0x5C)</td>
+                                        <td>Effects 2 Depth (formerly Tremolo Depth)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>93 (0x5D)</td>
+                                        <td>Effects 3 Depth (formerly Chorus Depth)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>94 (0x5E)</td>
+                                        <td>Effects 4 Depth (formerly Celeste Detune)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>95 (0x5F)</td>
+                                        <td>Effects 5 Depth (formerly Phaser Depth)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>96 (0x60)</td>
+                                        <td>Data Increment</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>97 (0x61)</td>
+                                        <td>Data Decrement</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>98 (0x62)</td>
+                                        <td>Non-Registered Parameter Number (LSB)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>99 (0x63)</td>
+                                        <td>Non-Registered Parameter Number (MSB)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>100 (0x64)</td>
+                                        <td>Registered Parameter Number (LSB)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>101 (0x65)</td>
+                                        <td>Registered Parameter Number (MSB)</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>121-127 (0x79-0x7F)</td>
+                                        <td>Mode Messages</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Defined MIDI Controllers</small> </center>
+                        <p><i>Program Change Event</i>
+                            <br>The Program Change Event is used to change which program (instrument/patch) should be played on the MIDI channel. This type of event takes only one parameter, the program number of the new instrument/patch.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Program Change</b></td>
+                                        <td><b>MIDI Channel</b></td>
+                                        <td><b>Program Number</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>12 (0xC)</td>
+                                        <td>0-15</td>
+                                        <td>0-127</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Program Change Event Value Ranges</small></center>
+                        <p><i>Channel Aftertouch Event</i>
+                            <br>The Channel Aftertouch Event is similar to the Note Aftertouch message, except it effects all keys currently pressed on the specific MIDI channel. This type of event takes only one parameter, the aftertouch amount (0 = no pressure, 127 = full pressure).
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Channel Aftertouch</b></td>
+                                        <td><b>MIDI Channel</b></td>
+                                        <td><b>Amount</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>13 (0xD)</td>
+                                        <td>0-15</td>
+                                        <td>0-127</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Channel Aftertouch Event Value Ranges</small></center>
+                        <p><i>Pitch Bend Event</i>
+                            <br>The Pitch Bend Event is similar to a controller event, except that it is a unique MIDI Channel Event that has two bytes to describe it's value. The pitch value is defined by both parameters of the MIDI Channel Event by joining them in the format of yyyyyyyxxxxxxx where the y characters represent the last 7 bits of the second parameter and the x characters represent the last 7 bits of the first parameter. The combining of both parameters enables high accuracy values (0 - 16383). The pitch value affects all playing notes on the current channel. Values below 8192 decrease the pitch, while values above 8192 increase the pitch. The pitch range may vary from instrument to instrument, but is usually +/-2 semi-tones.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Pitch Bend</b></td>
+                                        <td><b>MIDI Channel</b></td>
+                                        <td><b>Value (LSB)</b></td>
+                                        <td><b>Value (MSB)</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>14 (0xE)</td>
+                                        <td>0-15</td>
+                                        <td>0-127</td>
+                                        <td>0-127</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Pitch Bend Event Value Ranges</small></center>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p><i>Meta Events</i>
+            <br>Events that are not to be sent or received over a MIDI port are called Meta Events. These events are defined by an event type value of 0xFF and have a variable size of parameter data which is defined after the event type.
+        </p>
+        <p>
+        </p>
+        <center>
+            <table cellspacing="1" cellpadding="4">
+                <tbody>
+                    <tr bgcolor="#999999">
+                        <td><b>Meta Event</b></td>
+                        <td><b>Type</b></td>
+                        <td><b>Length</b></td>
+                        <td><b>Data</b></td>
+                    </tr>
+                    <tr bgcolor="#c0c0c0">
+                        <td>255 (0xFF)</td>
+                        <td>0-255</td>
+                        <td>variable-length</td>
+                        <td>type specific</td>
+                    </tr>
+                </tbody>
+            </table><small>Meta Event Values</small></center>
+        <p>There are currently fifteen defined Meta Events. Each one is described in detail below.
+        </p>
+        <p>
+        </p>
+        <table width="100%">
+            <tbody>
+                <tr>
+                    <td width="20">&nbsp;</td>
+                    <td>
+                        <p><i>Sequence Number</i>
+                            <br>This meta event defines the pattern number of a Type 2 MIDI file or the number of a sequence in a Type 0 or Type 1 MIDI file. This meta event should always have a delta time of 0 and come before all MIDI Channel Events and non-zero delta time events.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Number (MSB)</b></td>
+                                        <td><b>Number (LSB)</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>0 (0x00)</td>
+                                        <td>2</td>
+                                        <td>0-255</td>
+                                        <td>0-255</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Sequence Number Meta Event Values</small></center>
+                        <p><i>Text Event</i>
+                            <br>This meta event defines some text which can be used for any reason including track notes, comments, etc. The text string is usually ASCII text, but may be any character (0x00-0xFF).
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Text</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>1 (0x01)</td>
+                                        <td>string length</td>
+                                        <td>ASCII text</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Text Meta Event Values</small></center>
+                        <p><i>Copyright Notice</i>
+                            <br>This meta event defines copyright information including the copyright symbol © (0xA9), the year and the author. This meta event should always be in the first track chunk, have a delta time of 0 and come before all MIDI Channel Events and non-zero delta time events.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Text</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>2 (0x02)</td>
+                                        <td>string length</td>
+                                        <td>ASCII text</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Copyright Notice Meta Event Values</small></center>
+                        <p><i>Sequence/Track Name</i>
+                            <br>This meta event defines the name of a sequence when in a Type 0 or Type 2 MIDI file or in the first track of a Type 1 MIDI file. It defines a track name when it appears in any track after the first in a Type 1 MIDI file. This meta event should always have a delta time of 0 and come before all MIDI Channel Events and non-zero delta time events.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Text</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>3 (0x03)</td>
+                                        <td>string length</td>
+                                        <td>ASCII text</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Sequence/Track Name Meta Event Values</small></center>
+                        <p><i>Instrument Name</i>
+                            <br>This meta event defines the name of an instrument being used in the current track chunk. This event can be used with the MIDI Channel Prefix meta event to define which instrument is being used on a specific channel.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Text</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>4 (0x04)</td>
+                                        <td>string length</td>
+                                        <td>ASCII text</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Instrument Name Meta Event Values</small></center>
+                        <p><i>Lyrics</i>
+                            <br>This meta event defines the lyrics in a song and are usually used to define a syllable or group of works per quarter note. This event can be used as an equivalent of sheet music lyrics or for implementing a karaoke-style system.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Text</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>5 (0x05)</td>
+                                        <td>string length</td>
+                                        <td>ASCII text</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Lyrics Meta Event Values</small></center>
+                        <p><i>Marker</i>
+                            <br>This meta event marks a significant point in time for the sequence. It is usually found in the first track chunk, but may appear in any one. This event can be useful for marking the beginning/end of a new verse or chorus.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Text</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>6 (0x06)</td>
+                                        <td>string length</td>
+                                        <td>ASCII text</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Marker Meta Event Values</small></center>
+                        <p><i>Cue Point</i>
+                            <br>This meta event marks the start of some type of new sound or action. It is usually found in the first track chunk, but may appear in any one. This event is sometimes used by sequencers to mark when playback of a sample or video should begin.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Text</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>7 (0x07)</td>
+                                        <td>string length</td>
+                                        <td>ASCII text</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Cue Point Meta Event Values</small></center>
+                        <p><i>MIDI Channel Prefix</i>
+                            <br>This meta event associates a MIDI channel with following meta events. It's effect is terminated by another MIDI Channel Prefix event or any non- Meta event. It is often used before an Instrument Name Event to specify which channel an instrument name represents.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Channel</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>32 (0x20)</td>
+                                        <td>1</td>
+                                        <td>0-15</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>MIDI Channel Prefix Meta Event Values</small></center>
+                        <p><i>End Of Track</i>
+                            <br>This meta event is used to signal the end of a track chunk and must always appear as the last event in every track chunk.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>47 (0x2F)</td>
+                                        <td>0</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>End Of Track Meta Event Values</small></center>
+                        <p><i>Set Tempo</i>
+                            <br>This meta event sets the sequence tempo in terms of microseconds per quarter-note which is encoded in three bytes. It usually is found in the first track chunk, time-aligned to occur at the same time as a MIDI clock message to promote more accurate synchronization. If no set tempo event is present, 120 beats per minute is assumed. The following formula's can be used to translate the tempo from microseconds per quarter-note to beats per minute and back.
+                        </p>
+                        <p><code>MICROSECONDS_PER_MINUTE = 60000000<br><br>BPM = MICROSECONDS_PER_MINUTE / MPQN<br>MPQN = MICROSECONDS_PER_MINUTE / BPM<br></code>
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Microseconds/Quarter-Note</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>81 (0x51)</td>
+                                        <td>3</td>
+                                        <td>0-8355711</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Set Tempo Meta Event Values</small></center>
+                        <p><i>SMPTE Offset</i>
+                            <br>This meta event is used to specify the SMPTE starting point offset from the beginning of the track. It is defined in terms of hours, minutes, seconds, frames and sub-frames (always 100 sub-frames per frame, no matter what sub-division is specified in the MIDI header chunk). The byte used to specify the hour offset also specifies the frame rate in the following format: 0rrhhhhhh where rr is two bits for the frame rate where 00=24 fps, 01=25 fps, 10=30 fps (drop frame), 11=30 fps and hhhhhh is six bits for the hour (0-23). The hour byte's top bit is always 0. The frame byte's possible range depends on the encoded frame rate in the hour byte. A 25 fps frame rate means that a maximum value of 24 may be set for the frame byte.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Hour</b></td>
+                                        <td><b>Min</b></td>
+                                        <td><b>Sec</b></td>
+                                        <td><b>Fr</b></td>
+                                        <td><b>SubFr</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>84 (0x54)</td>
+                                        <td>5</td>
+                                        <td>0-23 *</td>
+                                        <td>0-59</td>
+                                        <td>0-59</td>
+                                        <td>0-30 *</td>
+                                        <td>0-99</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>SMPTE Offset Meta Event Values, * read preceding text for details</small></center>
+                        <p><i>Time Signature</i>
+                            <br>This meta event is used to set a sequences time signature. The time signature defined with 4 bytes, a numerator, a denominator, a metronome pulse and number of 32nd notes per MIDI quarter-note. The numerator is specified as a literal value, but the denominator is specified as (get ready) the value to which the power of 2 must be raised to equal the number of subdivisions per whole note. For example, a value of 0 means a whole note because 2 to the power of 0 is 1 (whole note), a value of 1 means a half-note because 2 to the power of 1 is 2 (half-note), and so on. The metronome pulse specifies how often the metronome should click in terms of the number of clock signals per click, which come at a rate of 24 per quarter-note. For example, a value of 24 would mean to click once every quarter-note (beat) and a value of 48 would mean to click once every half-note (2 beats). And finally, the fourth byte specifies the number of 32nd notes per 24 MIDI clock signals. This value is usually 8 because there are usually 8 32nd notes in a quarter-note. At least one Time Signature Event should appear in the first track chunk (or all track chunks in a Type 2 file) before any non-zero delta time events. If one is not specified 4/4, 24, 8 should be assumed.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Numer</b></td>
+                                        <td><b>Denom</b></td>
+                                        <td><b>Metro</b></td>
+                                        <td><b>32nds</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>88 (0x58)</td>
+                                        <td>4</td>
+                                        <td>0-255</td>
+                                        <td>0-255</td>
+                                        <td>0-255</td>
+                                        <td>1-255</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Time Signature Meta Event Values</small></center>
+                        <p><i>Key Signature</i>
+                            <br>This meta event is used to specify the key (number of sharps or flats) and scale (major or minor) of a sequence. A positive value for the key specifies the number of sharps and a negative value specifies the number of flats. A value of 0 for the scale specifies a major key and a value of 1 specifies a minor key.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Key</b></td>
+                                        <td><b>Scale</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>89 (0x59)</td>
+                                        <td>2</td>
+                                        <td>-7-7</td>
+                                        <td>0-1</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Key Signature Meta Event Values</small></center>
+                        <p><i>Sequencer Specific</i>
+                            <br>This meta event is used to specify information specific to a hardware or software sequencer. The first Data byte (or three bytes if the first byte is 0) specifies the manufacturer's ID and the following bytes contain information specified by the manufacturer. The individual manufacturers may document this information in their respective manuals.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>Meta Event</b></td>
+                                        <td><b>Type</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Data</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>255 (0xFF)</td>
+                                        <td>127 (0x7F)</td>
+                                        <td>variable-length</td>
+                                        <td>any type and amount *</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Sequencer Specific Meta Event Values, * read preceding text for details</small></center>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p><i>System Exclusive Events</i>
+            <br>Also known as SysEx Events, these MIDI events are used to control MIDI hardware or software that require special data bytes that will follow their manufacturer's specifications. Every SysEx event includes an ID that specifies which manufacturer's product is to be the intended receiver. All other products will ignore the event. There are three types of SysEx messages which are used to send data in a single event, across multiple events or authorize the transmission of specific MIDI messages.
+        </p>
+        <p>
+        </p>
+        <table width="100%">
+            <tbody>
+                <tr>
+                    <td width="20">&nbsp;</td>
+                    <td>
+                        <p><i>Normal SysEx Events</i>
+                            <br>These are the most common type of SysEx event and are used to hold a single block of manufacturer specific data. The first byte is always 0xF0 and the second is a variable-length value that specifies the length of the following SysEx data in bytes. The SysEx data bytes must always end with a 0xF7 byte to signal the end of the message.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>SysEx Event</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Data</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>240 (0xF0)</td>
+                                        <td>variable-length</td>
+                                        <td>data bytes, 0xF7</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Normal SysEx Event Values</small></center>
+                        <p><i>Divided SysEx Events</i>
+                            <br>A large amount of SysEx data in a Normal SysEx Event could cause following MIDI Channel Events to be transmitted after the time they should be played. This will cause an unwanted delay in play back of the following events. The second type of SysEx Events solve this problem by allowing a large amount of SysEx data to be divided into smaller blocks, transmitted with a delay between each division to allow the transmission of other MIDI events in order to prevent congesting of the limited MIDI bandwidth. The initial Divided SysEx Event follows the same format as a Normal SysEx Event with the exception that the last data byte is not 0xF7. This indicates the the SysEx data is not finished and will be continued in an upcoming Divided SysEx Event. Any following Divided SysEx Events before the final one use the a similar format as the first, only the start byte is 0xF0 instead of 0xF7 to signal continuation of SysEx data. The final block follows the same format as the continuation blocks, except the last data byte is 0xF7 to signal the completion of the divided SysEx data.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>SysEx Event</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Data</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>240 (0xF0)</td>
+                                        <td>variable-length</td>
+                                        <td>data bytes</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>247 (0xF7)</td>
+                                        <td>variable-length</td>
+                                        <td>data bytes</td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>247 (0xF7)</td>
+                                        <td>variable-length</td>
+                                        <td>data bytes, 0xF7</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Divided SysEx Event Values</small></center>
+                        <p><i>Authorization SysEx Events</i>
+                            <br>The last type of SysEx Event authorizes and enables the transmission of special messages such as Song Position Pointer, MIDI Time Code and Song Select messages. These SysEx Events use the event type value 0xF7.
+                        </p>
+                        <p>
+                        </p>
+                        <center>
+                            <table cellspacing="1" cellpadding="4">
+                                <tbody>
+                                    <tr bgcolor="#999999">
+                                        <td><b>SysEx Event</b></td>
+                                        <td><b>Length</b></td>
+                                        <td><b>Data</b></td>
+                                    </tr>
+                                    <tr bgcolor="#c0c0c0">
+                                        <td>247 (0xF7)</td>
+                                        <td>variable-length</td>
+                                        <td>data bytes</td>
+                                    </tr>
+                                </tbody>
+                            </table><small>Authorization SysEx Event Values</small></center>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <p></p>
+    </div>
+</body>
+
+</html>
