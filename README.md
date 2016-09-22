@@ -1,12 +1,12 @@
 # JSMidiParser
-JS MIDI PARSER : Converts MIDI binary files to Javascript readable Objects
+JS MIDI PARSER : Converts MIDI binary files to Javascript structured Objects
 
 Project Name: JS Midi Parser
 	Version: 2.0.1
 	Author: colxi
 	Author URI: http://www.colxi.info/
 	Description: MIDIParser library reads .MID binary files, Base64 encoded MIDI Data,
-	or UInt8 Arrays, and outputs as a readable and structured JS object.
+	or UInt8 Arrays, and outputs as structured JS object.
 
 	---     Usage Methods 	   ---
 	------------------------------
@@ -26,7 +26,7 @@ Project Name: JS Midi Parser
 	---  Output Object Specs   ---
 	------------------------------
 
-	MIDIObject{
+	Output_Object{
 		formatType: 0|1|2, 					// Midi format type
 		timeDivision: (int),				// song tempo (bpm)
 		tracks: (int), 						// total tracks count
@@ -51,12 +51,12 @@ Project Name: JS Midi Parser
 	}
 
 Data from Event 12 of Track 2 could be easilly readed with:
-OutputObject.track[2].event[12].data;
+Output_Object.track[2].event[12].data;
 
 -------------------------------------------------------------------------------
 
 + MIDI Specs info :
-MIDI Binary Encoding Specifications in http://www.sonicspot.com/guide/midifiles.html
+MIDI Binary Encoding Specifications in https://github.com/colxi/JSMidiParser/wiki/MIDI-File-Format-Specifications
 
 
 LICENCE
