@@ -4,7 +4,10 @@
   "version": "2.0.2",
   "keywords": [
     "midi",
+    "MIDI",
     "midi browser",
+    "midi parser",
+    "midi reader",
     "import midi",
     "midi js",
     "midi standard",
