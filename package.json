@@ -1,0 +1,21 @@
+{
+  "name": "js-midi-parser",
+  "description": "Read .mid binary files or base64 encoded MIDI data, and converts data (Tracks and Events) to Javascript structured Object ",
+  "version": "2.0.1",
+  "keywords": [
+    "midi",
+    "midi browser",
+    "import midi",
+    "midi js",
+    "read midi file",
+    "parse midi"
+  ],
+  "author": "colxi",
+  "license": "GPL",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/colxi/JS-MIDI-Parser.git"
+  },
+  "dependencies" : {
+  }
+}
