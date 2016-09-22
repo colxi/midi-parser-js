@@ -1,7 +1,6 @@
 # JSMidiParser
 JS MIDI PARSER : Converts MIDI binary files to Javascript structured Objects
 
-Project Name: JS Midi Parser
 	Version: 2.0.1
 	
 	Author: colxi
@@ -11,23 +10,21 @@ Project Name: JS Midi Parser
 	Description: MIDIParser library reads .MID binary files, Base64 encoded MIDI Data,
 	or UInt8 Arrays, and outputs as structured JS object.
 
-	---     Usage Methods 	   ---
-	------------------------------
+# Usage: 
 
-	* OPTION 1 (MIDIParser.addListener)
+	* OPTION 1 (MIDIParser.addListener) :
 	INPUT ELEMENT LISTENER : call MIDIParser.addListener(fileInputElement,callbacFunction) function, setting the
 	Input File HTML element that will handle the file.mid opening, and callback function
 	that will recieve the resulting Object formated, set of data.
 
-	* OPTION 2 (MIDIParser.Uint8)
+	* OPTION 2 (MIDIParser.Uint8) :
 	Provide your own UInt8 Array to MIDIParser.Uint8(), to get an Object formated, set of data
 
-	* OPTION 3 (MIDIParser.Base64)
+	* OPTION 3 (MIDIParser.Base64) :
 	Provide a Base64 encoded Data to MIDIParser.Base64(), , to get an Object formated, set of data
 
 
-	---  Output Object Specs   ---
-	------------------------------
+# Output Object Structure  
 
 	Output_Object{
 		formatType: 0|1|2, 					// Midi format type
@@ -58,7 +55,7 @@ Output_Object.track[2].event[12].data;
 
 -------------------------------------------------------------------------------
 
-+ MIDI Specs info :
+# MIDI File Format Specifications :
 MIDI Binary Encoding Specifications in https://github.com/colxi/JSMidiParser/wiki/MIDI-File-Format-Specifications
 
 
