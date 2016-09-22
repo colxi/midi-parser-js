@@ -1,6 +1,5 @@
 /*
-	Project Name: JS Midi Parser
-	Version: 2.0.1
+	Project Name: midi-parser-js
 	Author: colxi
 	Author URI: http://www.colxi.info/
 	Description: MIDIParser library reads .MID binary files, Base64 encoded MIDI Data,
@@ -51,30 +50,13 @@
 Data from Event 12 of Track 2 could be easilly readed with:
 OutputObject.track[2].event[12].data;
 
--------------------------------------------------------------------------------
-
-+ MIDI Specs info :
-MIDI Binary Encoding Specifications in http://www.sonicspot.com/guide/midifiles.html
-
-
-LICENCE
---------
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
 */
+
 
 // check browser compatibillity
 if (!window.File || !window.FileReader) console.warn('The File APIs are not fully supported in this browser. MIDIParser will not work properly');
 
-MIDIParser = {
+var MIDIParser = {
 	// debug (bool), when enabled will log in console unimplemented events warnings and internal handled errors.
 	debug: false,
 
@@ -94,7 +76,7 @@ MIDIParser = {
 
 		_fileElement.addEventListener('change', function(InputEvt){				// set the 'file selected' event handler
 			if (!InputEvt.target.files.length) return false;					// return false if no elements where selected
-			console.log('MIDIParser.addListener() : File detected in INPUT ELEMENT attaching listener..');
+			console.log('MIDIParser.addListener() : File detected in INPUT ELEMENT processing data..');
 			var reader = new FileReader();										// prepare the file Reader
 			reader.readAsArrayBuffer(InputEvt.target.files[0]);					// read the binary data
 			reader.onload =  function(e){
@@ -103,20 +85,19 @@ MIDIParser = {
 		});
 	},
 
-	Base64 : function(b64, _callback){
-		b64 = String(b64);
-		_callback = _callback || function(){};
+	Base64 : function(b64String){
+		b64String = String(b64String);
 
 		var BASE64_MARKER = ';base64,';
 
-		var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-		var base64 = dataURI.substring(base64Index);
+		var base64Index = b64String.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+		var base64 = b64String.substring(base64Index);
 		var raw = window.atob(base64);
 		var rawLength = raw.length;
 		var array = new Uint8Array(new ArrayBuffer(rawLength));
 
 		for(var i=0; i<rawLength; i++) array[i] = raw.charCodeAt(i);
-		_callback( MidiParser.Uint8(array) );
+		return  MIDIParser.Uint8(array) ;
 	},
 
 	// parse() function reads the binary data, interpreting and spliting each chuck
@@ -168,7 +149,10 @@ MIDIParser = {
 
 		file.data = FileAsUint8Array;											// 8 bits bytes file data array
 		//  ** read FILE HEADER
-		if(file.readInt(4) != 0x4D546864) return false; 						// Header validation failed (not MIDI standard or file corrupt.)
+		if(file.readInt(4) !== 0x4D546864){
+			console.warn('Header validation failed (not MIDI standard or file corrupt.)');
+			return false; 														// Header validation failed (not MIDI standard or file corrupt.)
+		}
 		var headerSize 			= file.readInt(4);								// header size (unused var), getted just for read pointer movement
 		var MIDI 				= {};											// create new midi object
 		MIDI.formatType   		= file.readInt(2);								// get MIDI Format Type
@@ -184,23 +168,25 @@ MIDIParser = {
 		//  ** read TRACK CHUNK
 		for(var t=1; t <= MIDI.tracks; t++){
 			MIDI.track[t-1] 	= {event: []};									// create new Track entry in Array
-			if(file.readInt(4) != 0x4D54726B) return false;						// Track chunk header validation failed.
-			var chunkLength	 	= file.readInt(4);								// var NOT USED, just for pointer move. get chunk size (bytes length)
+			if(file.readInt(4) !== 0x4D54726B) return false;					// Track chunk header validation failed.
+			file.readInt(4);													// move pointer. get chunk size (bytes length)
 			var e		  		= 0;											// init event counter
 			var endOfTrack 		= false;										// FLAG for track reading secuence breaking
 			// ** read EVENT CHUNK
+			var statusByte;
+			var laststatusByte;
 			while(!endOfTrack){
 				e++;															// increase by 1 event counter
 				MIDI.track[t-1].event[e-1] = {};	 							// create new event object, in events array
 				MIDI.track[t-1].event[e-1].deltaTime  = file.readIntVLV();		// get DELTA TIME OF MIDI event (Variable Length Value)
-				var statusByte = file.readInt(1);								// read EVENT TYPE (STATUS BYTE)
+				statusByte = file.readInt(1);									// read EVENT TYPE (STATUS BYTE)
 				if(statusByte >= 128) laststatusByte = statusByte;				// NEW STATUS BYTE DETECTED
-					else{														// 'RUNNING STATUS' situation detected
-						statusByte = laststatusByte;							// apply last loop, Status Byte
-						file.movePointer(-1); 									// move back the pointer (cause readed byte is not status byte)
-					}
+				else{															// 'RUNNING STATUS' situation detected
+					statusByte = laststatusByte;								// apply last loop, Status Byte
+					file.movePointer(-1); 										// move back the pointer (cause readed byte is not status byte)
+				}
 				// ** Identify EVENT
-				if(statusByte == 0xFF){ 										// Meta Event type
+				if(statusByte === 0xFF){ 										// Meta Event type
 					MIDI.track[t-1].event[e-1].type = 0xFF;						// assign metaEvent code to array
 					MIDI.track[t-1].event[e-1].metaType =  file.readInt(1);		// assign metaEvent subtype
 					var metaEventLength = file.readIntVLV();					// get the metaEvent length
@@ -230,7 +216,7 @@ MIDIParser = {
 						default :
 							file.readInt(metaEventLength);
 							MIDI.track[t-1].event[e-1].data = file.readInt(metaEventLength);
-							if (this.debug) console.log("Unimplemented 0xFF event! data block readed as Integer");
+							if (this.debug) console.info('Unimplemented 0xFF event! data block readed as Integer');
 					}
 				}else{															// MIDI Control Events OR System Exclusive Events
 					statusByte = statusByte.toString(16).split('');				// split the status byte HEX representation, to obtain 4 bits values
@@ -241,7 +227,7 @@ MIDIParser = {
 						case 0xF:												// System Exclusive Events
 							var event_length = file.readIntVLV();
 							MIDI.track[t-1].event[e-1].data = file.readInt(event_length);
-							if (this.debug) console.log("Unimplemented 0xF exclusive events! data block readed as Integer");
+							if (this.debug) console.info('Unimplemented 0xF exclusive events! data block readed as Integer');
 							break;
 						case 0xA:												// Note Aftertouch
 						case 0xB:												// Controller
@@ -257,7 +243,7 @@ MIDIParser = {
 							MIDI.track[t-1].event[e-1].data = file.readInt(1);
 							break;
 						default:
-							if (this.debug) console.log("Unknown EVENT detected.... reading cancelled!");
+							console.warn('Unknown EVENT detected.... reading cancelled!');
 							return false;
 					}
 				}
@@ -266,3 +252,6 @@ MIDIParser = {
 		return MIDI;
 	}
 };
+
+
+if(typeof exports !== 'undefined') exports.default = MIDIParser;
