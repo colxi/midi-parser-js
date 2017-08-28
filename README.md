@@ -28,14 +28,11 @@ Midi-parser-js can proces MIDI data from a File input Element, or as an alternat
 
 
 ### FileInput DOM Element Listener (Async) :
-* **_Note: ONLY IN BROWSERS!_**
 
 - **MIDIParser.addListener( FileInputElem , CallbackFunction )** :
-Sets a listener on a ```FileInput``` Element,  that gets executed when the user selects a file. The listener automatically Parsess the attached **.mid** file and calls the provided ```CallbackFunction``` with the resulting object as first argument.
+Sets a listener on a ```FileInput``` Element,  that gets executed when the user selects a file. The listener automatically Parsess the attached **.mid** file and calls the provided ```CallbackFunction``` with the resulting object as first argument. ( **_Note: ONLY IN BROWSERS!_** )
 
 ### Direct Encoded Data Parsing  (Sync) :
-
-MIDIParser accepts two different encodings as a direct data input : ```Uint8 Arrays```, and ```Base64 Strings```.
 
 - **MIDIParser.Uint8( uint8Array )** : Accepts an uint8 Array as input. Returns the formatted MIDI object.
 
