@@ -45,7 +45,7 @@ Sets a listener on a ```FileInput``` Element,  that gets executed when the user 
 ```javascript
 	Output_Object{
 		formatType: 0|1|2, 					// Midi format type
-		timeDivision: (int),				// song tempo (bpm)
+		timeDivision: (int),					// song tempo (bpm)
 		tracks: (int), 						// total tracks count
 		track: Array[
 			[0]: Object{					// TRACK 1!
@@ -68,7 +68,9 @@ Sets a listener on a ```FileInput``` Element,  that gets executed when the user 
 	}
 ```
 Data from **Event 12** of **Track 2** could be easilly readed with:
-```FileInputOutput_Object.track[2].event[12].data;```
+```javascript
+	Output_Object.track[2].event[12].data;
+```
 
 ---
 ## MIDI File Format Specifications :
