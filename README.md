@@ -15,34 +15,31 @@ If you are in the NodeJs enviroment, can install the package via:
 
 ```npm install midi-parser-js```
 
----
+
 
 ## Usage:
 
 Midi-parser-js can proces MIDI data from a File input Element, or as an alternative you can provide manually the .mid file data, encoded with BASE64 or as a UINT8 Array. These are the usage options:
 
----
+
 
 ### Autodetected Input Type:
-**MIDIParser.parse( input [,CallbackFunction] )** : Accepts any of the supported Data Sources (```FileInput```|```uint8Array```|```base64String```) , and selects automatically the appropiate Parse method. When a FileInput element is provided, is required a callback to handle the return of the Midi Object.
+- **MIDIParser.parse( input [,CallbackFunction] )** : Accepts any of the supported Data Sources (```FileInput```|```uint8Array```|```base64String```) , and selects automatically the appropiate Parse method. When a FileInput element is provided, is required a callback to handle the return of the Midi Object.
 
----
 
 ### FileInput DOM Element Listener (Async) :
 * **_Note: ONLY IN BROWSERS!_**
 
-**MIDIParser.addListener( FileInputElem , CallbackFunction )** :
+- **MIDIParser.addListener( FileInputElem , CallbackFunction )** :
 Sets a listener on a ```FileInput``` Element,  that gets executed when the user selects a file. The listener automatically Parsess the attached **.mid** file and calls the provided ```CallbackFunction``` with the resulting object as first argument.
-
----
 
 ### Direct Encoded Data Parsing  (Sync) :
 
 MIDIParser accepts two different encodings as a direct data input : ```Uint8 Arrays```, and ```Base64 Strings```.
 
-**MIDIParser.Uint8( uint8Array )** : Accepts an uint8 Array as input. Returns the formatted MIDI object.
+- **MIDIParser.Uint8( uint8Array )** : Accepts an uint8 Array as input. Returns the formatted MIDI object.
 
-**MIDIParser.Base64( base64String )** : Accepts a  Base64 String. Returns the formatted MIDI object.
+- **MIDIParser.Base64( base64String )** : Accepts a  Base64 String. Returns the formatted MIDI object.
 
 
 ## Returned Object Structure :
