@@ -1,4 +1,9 @@
+
 # Midi Parser Library (AKA JSMIDIPArser)
+[![NoDependencies](https://img.shields.io/badge/dependencies-none-green.svg)](https://github.com/colxi/midi-parser-js)
+[![Browser](https://img.shields.io/badge/browser-compatible-blue.svg)](https://github.com/colxi/midi-parser-js)
+[![Node](https://img.shields.io/badge/node-compatible-brightgreen.svg)](https://www.npmjs.com/package/midi-parser-js)
+
 MIDIParser is a Javascript **Binary MIDI files** reader, for Browsers and NODEjs. Converts MIDI binary files to Javascript Structured Objects, easier to iterate and interact with.
 
 **It can also Parse ```BASE64``` encoded .mid data, or ```UINT8``` array data structures from a raw **.mid** binary.**
@@ -13,7 +18,7 @@ In browser enviroment you can include this library using the jsdelivr CDN ...
 
 If you are in the NodeJs enviroment, can install the package via:
 
-```npm install midi-parser-js```
+```$ npm install midi-parser-js```
 
 
 
