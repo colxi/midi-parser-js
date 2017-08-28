@@ -9,7 +9,7 @@ MIDIParser is a Javascript **Binary MIDI files** reader, for Browsers and NODEjs
 
 In browser enviroment you can include this library using the jsdelivr CDN ...
 
-```<script src='https://cdn.jsdelivr.net/gh/colxi/midi-parser-js@latest/src/midi-parser.min.js'></script>```
+```<script src='https://cdn.jsdelivr.net/gh/colxi/midi-parser-js@2.1.2/src/midi-parser.min.js'></script>```
 
 If you are in the NodeJs enviroment, can install the package via:
 
