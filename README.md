@@ -1,31 +1,54 @@
 # Midi Parser Library (AKA JSMIDIPArser)
- MIDI PARSER is Binary MIDI files reader Javascript library for browsers. Converts MIDI binary files to Javascript structured Objects. Also can convert BASE64 encoded .mid data, or UINT8 array data structures from a raw .mid binary.
+MIDIParser is a Javascript **Binary MIDI files** reader, for Browsers and NODEjs. Converts MIDI binary files to Javascript Structured Objects, easier to iterate and interact with.
+
+**It can also Parse ```BASE64``` encoded .mid data, or ```UINT8``` array data structures from a raw **.mid** binary.**
 
 	Author URI: http://www.colxi.info/
-	Installation : npm install midi-parser-js
 
-# Usage: 
-	
-	Midi-parser-js can proces MIDI data from a File input Element, or as an alternative you can provide manually the .mid file data, encoded with BASE64 or as a UINT8 Array. These are the usage options: 
-	
-	## DOM ELEMENT LISTENER (Async):
-	MIDIParser.addListener( INPUTElem , CallbackFunction) :
-	INPUT ELEMENT LISTENER : call MIDIParser.addListener(fileInputElement,callbacFunction) function, setting the
-	Input File HTML element that will handle the file.mid opening, and callback function
-	that will recieve the resulting Object formated, set of data (Meta , Tracks & MIDI Events).
+## Package distribution networks :
 
-	## MANUAL INPUT  (Sync) : 
-	MIDIParser.Uint8( uint8Array)
-	MIDIParser.Base64( base64String)
-	Provide your own UInt8 Array or base64 String to the corresponding method, and  get an Object formated, set of data (Meta , Tracks & MIDI Events)
+In browser enviroment you can include this library using the jsdelivr CDN ...
+
+```<script src='https://cdn.jsdelivr.net/gh/colxi/midi-parser-js@latest/src/midi-parser.min.js'></script>```
+
+If you are in the NodeJs enviroment, can install the package via:
+
+```npm install midi-parser-js```
+
+---
+
+## Usage:
+
+Midi-parser-js can proces MIDI data from a File input Element, or as an alternative you can provide manually the .mid file data, encoded with BASE64 or as a UINT8 Array. These are the usage options:
+
+---
+### Autodetected Input Type:
+**MIDIParser.parse( input [,CallbackFunction] )** : Accepts any of the supported Data Sources (```FileInput```|```uint8Array```|```base64String```) , and selects automatically the appropiate Parse method. When a FileInput element is provided, is required a callback to handle the return of the Midi Object.
+
+---
+
+### FileInput DOM Element Listener (Async) :
+* **_Note: ONLY IN BROWSERS!_**
+
+**MIDIParser.addListener( FileInputElem , CallbackFunction )** :
+Sets a listener on a ```FileInput``` Element,  that gets executed when the user selects a file. The listener automatically Parsess the attached **.mid** file and calls the provided ```CallbackFunction``` with the resulting object as first argument.
+---
+### Direct Encoded Data Parsing  (Sync) :
+
+MIDIParser accepts two different encodings as a direct data input : ```Uint8 Arrays```, and ```Base64 Strings```.
+
+**MIDIParser.Uint8( uint8Array )** : Accepts an uint8 Array as input. Returns the formatted MIDI object.
+
+**MIDIParser.Base64( base64String )** : Accepts a  Base64 String. Returns the formatted MIDI object.
 
 
+## Returned Object Structure :
 
-# Output Object Structure  
 
+```javascript
 	Output_Object{
 		formatType: 0|1|2, 					// Midi format type
-		timeDivision: (int),					// song tempo (bpm)
+		timeDivision: (int),				// song tempo (bpm)
 		tracks: (int), 						// total tracks count
 		track: Array[
 			[0]: Object{					// TRACK 1!
@@ -46,11 +69,12 @@
 			...
 		]
 	}
+```
+Data from **Event 12** of **Track 2** could be easilly readed with:
+```FileInputOutput_Object.track[2].event[12].data;```
 
-Data from Event 12 of Track 2 could be easilly readed with:
-Output_Object.track[2].event[12].data;
+---
+## MIDI File Format Specifications :
 
--------------------------------------------------------------------------------
-
-# MIDI File Format Specifications :
 MIDI Binary Encoding Specifications in https://github.com/colxi/midi-parser-js/wiki/MIDI-File-Format-Specifications
+
