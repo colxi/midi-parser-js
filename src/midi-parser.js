@@ -146,7 +146,7 @@ var MIDIParser = {
 			movePointer: function(_bytes){										// move the pointer negative and positive direction
 				this.pointer += _bytes;
 				return this.pointer;
-			},	
+			},
 			readInt: function(_bytes){ 											// get integer from next _bytes group (big-endian)
 				_bytes = Math.min(_bytes, this.data.byteLength-this.pointer);
 				if (_bytes < 1) return -1;                                                                      // EOF
@@ -219,7 +219,7 @@ var MIDIParser = {
 			var laststatusByte;
 			while(!endOfTrack){
 				e++;															// increase by 1 event counter
-				MIDI.track[t-1].event[e-1] = {};	 								// create new event object, in events array
+				MIDI.track[t-1].event[e-1] = {};	 							// create new event object, in events array
 				MIDI.track[t-1].event[e-1].deltaTime  = file.readIntVLV();		// get DELTA TIME OF MIDI event (Variable Length Value)
 				statusByte = file.readInt(1);									// read EVENT TYPE (STATUS BYTE)
 +                               if (statusByte === -1) break;							// EOF
@@ -235,9 +235,9 @@ var MIDIParser = {
 					var metaEventLength = file.readIntVLV();					// get the metaEvent length
 					switch(MIDI.track[t-1].event[e-1].metaType){
 						case 0x2F:												// end of track, has no data byte
+						case -1:									// EOF
 							endOfTrack = true;									// change FLAG to force track reading loop breaking
 							break;
-						case -1:									// EOF
 						case 0x01: 												// Text Event
 						case 0x02:  											// Copyright Notice
 						case 0x03:  											// Sequence/Track Name (documentation: http://www.ta7.de/txt/musik/musi0006.htm)
