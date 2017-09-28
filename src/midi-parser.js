@@ -148,14 +148,16 @@ var MIDIParser = {
 				return this.pointer;
 			},
 			readInt: function(_bytes){ 											// get integer from next _bytes group (big-endian)
+				_bytes = Math.min(_bytes, this.data.byteLength-this.pointer);
+				if (_bytes < 1) return -1;                                                                      // EOF
 				var value = 0;
 				if(_bytes > 1){
 					for(var i=1; i<= (_bytes-1); i++){
-						value += parseInt(this.data[this.pointer]) * Math.pow(256, (_bytes - i));
+						value += this.data.getUint8(this.pointer) * Math.pow(256, (_bytes - i));
 						this.pointer++;
 					}
 				}
-				value += parseInt(this.data[this.pointer]);
+				value += this.data.getUint8(this.pointer);
 				this.pointer++;
 				return value;
 			},
@@ -166,11 +168,13 @@ var MIDIParser = {
 			},
 			readIntVLV: function(){												// read a variable length value
 				var value = 0;
-				if(parseInt(this.data[this.pointer]) < 128) { 					// ...value in a single byte
+				if ( this.pointer >= this.data.byteLength ){
+					return -1;									// EOF
+				}else if(this.data.getUint8(this.pointer) < 128){					// ...value in a single byte
 					value = this.readInt(1);
 				}else{															// ...value in multiple bytes
 					var FirstBytes = [];
-					while(parseInt(this.data[this.pointer]) >= 128){
+					while(this.data.getUint8(this.pointer) >= 128){
 						FirstBytes.push(this.readInt(1) - 128);
 					}
 					var lastByte  = this.readInt(1);
@@ -183,7 +187,7 @@ var MIDIParser = {
 			}
 		};
 
-		file.data = FileAsUint8Array;											// 8 bits bytes file data array
+		file.data = new DataView(FileAsUint8Array.buffer, FileAsUint8Array.byteOffset, FileAsUint8Array.byteLength);											// 8 bits bytes file data array
 		//  ** read FILE HEADER
 		if(file.readInt(4) !== 0x4D546864){
 			console.warn('Header validation failed (not MIDI standard or file corrupt.)');
@@ -204,7 +208,9 @@ var MIDIParser = {
 		//  ** read TRACK CHUNK
 		for(var t=1; t <= MIDI.tracks; t++){
 			MIDI.track[t-1] 	= {event: []};									// create new Track entry in Array
-			if(file.readInt(4) !== 0x4D54726B) return false;					// Track chunk header validation failed.
+			var headerValidation = file.readInt(4);
+			if ( headerValidation === -1 ) break;							// EOF
+			if(headerValidation !== 0x4D54726B) return false;                                       // Track chunk header validation failed.
 			file.readInt(4);													// move pointer. get chunk size (bytes length)
 			var e		  		= 0;											// init event counter
 			var endOfTrack 		= false;										// FLAG for track reading secuence breaking
@@ -216,7 +222,8 @@ var MIDIParser = {
 				MIDI.track[t-1].event[e-1] = {};	 							// create new event object, in events array
 				MIDI.track[t-1].event[e-1].deltaTime  = file.readIntVLV();		// get DELTA TIME OF MIDI event (Variable Length Value)
 				statusByte = file.readInt(1);									// read EVENT TYPE (STATUS BYTE)
-				if(statusByte >= 128) laststatusByte = statusByte;				// NEW STATUS BYTE DETECTED
++                               if (statusByte === -1) break;							// EOF
++                               else if(statusByte >= 128) laststatusByte = statusByte;                         // NEW STATUS BYTE DETECTED
 				else{															// 'RUNNING STATUS' situation detected
 					statusByte = laststatusByte;								// apply last loop, Status Byte
 					file.movePointer(-1); 										// move back the pointer (cause readed byte is not status byte)
@@ -228,6 +235,7 @@ var MIDIParser = {
 					var metaEventLength = file.readIntVLV();					// get the metaEvent length
 					switch(MIDI.track[t-1].event[e-1].metaType){
 						case 0x2F:												// end of track, has no data byte
+						case -1:									// EOF
 							endOfTrack = true;									// change FLAG to force track reading loop breaking
 							break;
 						case 0x01: 												// Text Event
@@ -278,7 +286,10 @@ var MIDIParser = {
 						case 0xD:												// Channel Aftertouch
 							MIDI.track[t-1].event[e-1].data = file.readInt(1);
 							break;
-						default:
+						case -1:												// EOF
+							endOfTrack = true;									// change FLAG to force track reading loop breaking
+							break;
+ 						default:
 							console.warn('Unknown EVENT detected.... reading cancelled!');
 							return false;
 					}
