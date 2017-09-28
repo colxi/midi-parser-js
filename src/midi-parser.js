@@ -222,8 +222,8 @@ var MIDIParser = {
 				MIDI.track[t-1].event[e-1] = {};	 							// create new event object, in events array
 				MIDI.track[t-1].event[e-1].deltaTime  = file.readIntVLV();		// get DELTA TIME OF MIDI event (Variable Length Value)
 				statusByte = file.readInt(1);									// read EVENT TYPE (STATUS BYTE)
-+                               if (statusByte === -1) break;							// EOF
-+                               else if(statusByte >= 128) laststatusByte = statusByte;                         // NEW STATUS BYTE DETECTED
+				if(statusByte === -1) break;									// EOF
+                else if(statusByte >= 128) laststatusByte = statusByte;                         // NEW STATUS BYTE DETECTED
 				else{															// 'RUNNING STATUS' situation detected
 					statusByte = laststatusByte;								// apply last loop, Status Byte
 					file.movePointer(-1); 										// move back the pointer (cause readed byte is not status byte)
