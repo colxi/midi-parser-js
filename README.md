@@ -1,5 +1,6 @@
+![logo](https://cdn.rawgit.com/colxi/midi-parser-js/dee7270e/logo.png)
 
-# Midi Parser Library (AKA JSMIDIPArser)
+# MidiParser.js 
 [![NoDependencies](https://img.shields.io/badge/dependencies-none-green.svg)](https://github.com/colxi/midi-parser-js)
 [![Browser](https://img.shields.io/badge/browser-compatible-blue.svg)](https://github.com/colxi/midi-parser-js)
 [![Node](https://img.shields.io/badge/node-compatible-brightgreen.svg)](https://www.npmjs.com/package/midi-parser-js)
