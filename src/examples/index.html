@@ -1,21 +1,21 @@
 <html>
-<head>
-<script src="midi-parser.js"></script>
-<script>
-	window.onload = function(){
-		// configure MIDIReader
-		MIDIParser.addListener(document.getElementById('filereader'), function(obj){
-			// Your callback function
-			console.log("JS MIDIParser result :");
-			console.log(obj);
-			alert("Done! check your console Log for output dump");
-		});
-	};
-</script>
-</head>
-<body>
-	Simple example for MIDIReader
-	<br/>
-	<input type="file" id="filereader"/>
-<body>
+    <head>
+    <script src="../midi-parser.js"></script>
+    <script>
+        window.onload = function(){
+            // configure MIDIReader
+            MIDIParser.addListener(document.getElementById('filereader'), function(obj){
+                // Your callback function
+                console.log("JS MIDIParser result :");
+                console.log(obj);
+                alert("Done! check your console Log for output dump");
+            });
+        };
+    </script>
+    </head>
+    <body>
+        Simple example for MIDIParser
+        <br/>
+        <input type="file" id="filereader"/>
+    <body>
 </html>
