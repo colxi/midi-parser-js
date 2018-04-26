@@ -44,6 +44,19 @@ Sets a listener on a ```FileInput``` Element,  that gets executed when the user 
 
 - **MIDIParser.Base64( base64String )** : Accepts a  Base64 String. Returns the formatted MIDI object.
 
+### Custom messages ( Syex, non-standard...)
+
+By default, the library ignores the sysex, and non-standard messages, simply converting their values to integers (when possible).
+However you can provide a custom hook function to be executed when any non-standard message is found, and process it by your own, returning the resulting value.
+
+Template of your hook :
+
+- **MIDIParser.customInterpreter**( msgType, ArrayBuffer, metaEventLength)
+-- msgType : Hex value of the message type
+-- ArrayBuffern: dataview of the midi data. You have to extract your value/s from it, moving the pointerr as needed.
+-- metaEventLength : When is >0 it's a metamessage
+
+> If you want the default action to be executed, return **false**
 
 ## Returned Object Structure :
 
