@@ -1,4 +1,4 @@
-![logo](https://cdn.rawgit.com/colxi/midi-parser-js/dee7270e/logo.png)
+![logo](https://cdn.rawgit.com/colxi/midi-parser-js/7e083d58/logo.png)
 
 # MidiParser.js 
 [![NoDependencies](https://img.shields.io/badge/dependencies-none-green.svg)](https://github.com/colxi/midi-parser-js)
