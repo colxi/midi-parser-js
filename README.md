@@ -80,11 +80,11 @@ Output_Object.track[2].event[12].data;
 The following methods are available to use MidiParser.js :
 
 
-- Include this library in your HTML using the CDN :
+- Include this library in your HTML head using the CDN :
 
-> <script src='https://cdn.rawgit.com/colxi/midi-parser-js/2bc043c2/src/midi-parser.js'></script>
+> <script src="https://cdn.rawgit.com/colxi/midi-parser-js/84bcf944/src/midi-parser.js"></script>
 
-- Install NPM to install the package :
+- Use NPM to install the package :
 
 > $ npm install midi-parser-js
 
