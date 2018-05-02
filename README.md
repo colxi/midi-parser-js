@@ -5,91 +5,93 @@
 [![Browser](https://img.shields.io/badge/browser-compatible-blue.svg)](https://github.com/colxi/midi-parser-js)
 [![Node](https://img.shields.io/badge/node-compatible-brightgreen.svg)](https://www.npmjs.com/package/midi-parser-js)
 
-MIDIParser is a Javascript **Binary MIDI files** reader, for Browsers and NODEjs. Converts MIDI binary files to Javascript Structured Objects, easier to iterate and interact with.
+MidiParser is a Javascript **Binary MIDI files** reader, for Browsers and NODEjs. Converts MIDI binary files to Javascript Structured Objects, easier to iterate and interact with.
 
-**It can also Parse ```BASE64``` encoded .mid data, or ```UINT8``` array data structures from a raw **.mid** binary.**
-
-	Author URI: http://www.colxi.info/
-
-## Package distribution networks :
-
-In browser enviroment you can include this library using the jsdelivr CDN ...
-
-```<script src='https://cdn.jsdelivr.net/gh/colxi/midi-parser-js@2.1.2/src/midi-parser.min.js'></script>```
-
-If you are in the NodeJs enviroment, can install the package via:
-
-```$ npm install midi-parser-js```
+**It can  Parse ```BASE64``` encoded .mid data, or ```UINT8``` array data structures from a raw **.mid** binary.**
 
 
+## Syntax:
 
-## Usage:
+MidiParser.js accepts two different MIDI data sources. It can handle data encoded with **BASE64** or contained in an **UINT8 Array**, or it can get the data from the selected file with a **File Input Element**, as soon as the event is fired, when the user selects the file. 
 
-Midi-parser-js can proces MIDI data from a File input Element, or as an alternative you can provide manually the .mid file data, encoded with BASE64 or as a UINT8 Array. These are the usage options:
+> MidiParser.parse( input [, callback] );
+
+- **input** : Accepts any of the supported Data Sources (```FileInputElement```|```uint8Array```|```base64String```)
+
+- **callback** : Function to handle the parsed data. Only required when input is a FileInputElement. 
+ 
 
 
+---
 
-### Autodetected Input Type:
-- **MIDIParser.parse( input [,CallbackFunction] )** : Accepts any of the supported Data Sources (```FileInput```|```uint8Array```|```base64String```) , and selects automatically the appropiate Parse method. When a FileInput element is provided, is required a callback to handle the return of the Midi Object.
+### Handle Custom messages ( sysEx, non-standard...)
 
-
-### FileInput DOM Element Listener (Async) :
-
-- **MIDIParser.addListener( FileInputElem , CallbackFunction )** :
-Sets a listener on a ```FileInput``` Element,  that gets executed when the user selects a file. The listener automatically Parsess the attached **.mid** file and calls the provided ```CallbackFunction``` with the resulting object as first argument. ( **_Note: ONLY IN BROWSERS!_** )
-
-### Direct Encoded Data Parsing  (Sync) :
-
-- **MIDIParser.Uint8( uint8Array )** : Accepts an uint8 Array as input. Returns the formatted MIDI object.
-
-- **MIDIParser.Base64( base64String )** : Accepts a  Base64 String. Returns the formatted MIDI object.
-
-### Custom messages ( Syex, non-standard...)
-
-By default, the library ignores the sysex, and non-standard messages, simply converting their values to integers (when possible).
+By default, the library ignores the sysEx, and non-standard messages, simply converting their values to integers (when possible).
 However you can provide a custom hook function to be executed when any non-standard message is found, and process it by your own, returning the resulting value.
 
-Template of your hook :
 
-- **MIDIParser.customInterpreter**( msgType, ArrayBuffer, metaEventLength)
--- msgType : Hex value of the message type
--- ArrayBuffern: dataview of the midi data. You have to extract your value/s from it, moving the pointerr as needed.
--- metaEventLength : When is >0 it's a metamessage
+
+> MidiParser.customInterpreter = function( msgType, arrayBuffer, metaEventLength){  /** your code ** / }
+
+- **msgType** : Hex value of the message type
+ 
+- **arrayBuffer** : dataview of the midi data. You have to extract your value/s from it, moving the pointer as needed.
+
+- **metaEventLength** : When is >0 you received a metamessage
 
 > If you want the default action to be executed, return **false**
 
-## Returned Object Structure :
+
+## Parsed Data Structure :
 
 
 ```javascript
-	Output_Object{
-		formatType: 0|1|2, 					// Midi format type
-		timeDivision: (int),					// song tempo (bpm)
-		tracks: (int), 						// total tracks count
-		track: Array[
-			[0]: Object{					// TRACK 1!
-				event: Array[				// Midi events in track 1
-					[0] : Object{			// EVENT 1
-						data: (string),
-						deltaTime: (int),
-						metaType: (int),
-						type: (int),
-					},
-					[1] : Object{...}		// EVENT 2
-					[2] : Object{...}		// EVENT 3
-					...
-				]
-			},
-			[1] : Object{...}
-			[2] : Object{...}
-			...
-		]
-	}
+Output_Object{
+  formatType: 0|1|2, 			// Midi format type
+  timeDivision: (int),			// song tempo (bpm)
+  tracks: (int), 				// total tracks count
+  track: Array[
+  	 [0]: Object{				// TRACK 1!
+  	   event: Array[		    // Midi events in track 1
+  	     [0] : Object{			// EVENT 1
+  		   data: (string),
+  		   deltaTime: (int),
+  		   metaType: (int),
+  		   type: (int),
+  		 },
+  		 [1] : Object{...},		// EVENT 2
+  		 [2] : Object{...},		// EVENT 3
+  		 // ...
+  	  ]
+    },
+  	[1] : Object{...},         // TRACK 2
+  	[2] : Object{...},         // TRACK 3
+  	// ...
+  ]
+}
 ```
-Data from **Event 12** of **Track 2** could be easilly readed with:
+The data from **Event 12** of **Track 2** could be easilly readed with:
 ```javascript
-	Output_Object.track[2].event[12].data;
+Output_Object.track[2].event[12].data;
 ```
+--- 
+## Installation :
+
+The following methods are available to use MidiParser.js :
+
+
+- Include this library in your HTML using the CDN :
+
+> <script src='https://cdn.rawgit.com/colxi/midi-parser-js/2bc043c2/src/midi-parser.js'></script>
+
+- Install NPM to install the package :
+
+> $ npm install midi-parser-js
+
+- Clone the repository from GITHUB :
+
+> $ git clone https://github.com/colxi/midi-parser-js.git
+
 
 ---
 ## MIDI File Format Specifications :

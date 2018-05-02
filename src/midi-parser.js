@@ -88,7 +88,7 @@ const _atob = function(string) {
     return result;
 };
 
-const MIDIParser = {
+const MIDIParser  = {
     // debug (bool), when enabled will log in console unimplemented events
     // warnings and internal handled errors.
     debug: false,
@@ -350,5 +350,6 @@ const MIDIParser = {
     customInterpreter : null // function( e_type , arrayByffer, metaEventLength){ return e_data_int }
 };
 
+const MidiParser = MIDIParser;
 
-if(typeof module !== 'undefined') module.exports = MIDIParser;
+if(typeof module !== 'undefined') module.exports = MidiParser;
