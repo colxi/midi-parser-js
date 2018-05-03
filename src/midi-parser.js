@@ -258,6 +258,13 @@ const MIDIParser  = {
                             MIDI.track[t-1].event[e-1].data = file.readInt(metaEventLength);
                             break;
                         case 0x54:                                              // SMPTE Offset
+                            MIDI.track[t-1].event[e-1].data    = [];
+                            MIDI.track[t-1].event[e-1].data[0] = file.readInt(1);
+                            MIDI.track[t-1].event[e-1].data[1] = file.readInt(1);
+                            MIDI.track[t-1].event[e-1].data[2] = file.readInt(1);
+                            MIDI.track[t-1].event[e-1].data[3] = file.readInt(1);
+                            MIDI.track[t-1].event[e-1].data[4] = file.readInt(1);
+                            break;
                         case 0x58:                                              // Time Signature
                             MIDI.track[t-1].event[e-1].data    = [];
                             MIDI.track[t-1].event[e-1].data[0] = file.readInt(1);
