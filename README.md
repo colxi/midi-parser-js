@@ -74,7 +74,7 @@ The data from **Event 12** of **Track 2** could be easilly readed with:
 ```javascript
 Output_Object.track[2].event[12].data;
 ```
---- 
+ 
 ## Installation :
 
 The following methods are available to use MidiParser.js :
@@ -82,7 +82,7 @@ The following methods are available to use MidiParser.js :
 
 - Include this library in your HTML head using the CDN :
 
-> <script src="https://cdn.rawgit.com/colxi/midi-parser-js/84bcf944/src/midi-parser.js"></script>
+> https://cdn.rawgit.com/colxi/midi-parser-js/84bcf944/src/midi-parser.js
 
 - Use NPM to install the package :
 
@@ -93,7 +93,7 @@ The following methods are available to use MidiParser.js :
 > $ git clone https://github.com/colxi/midi-parser-js.git
 
 
----
+
 ## MIDI File Format Specifications :
 
 MIDI Binary Encoding Specifications in https://github.com/colxi/midi-parser-js/wiki/MIDI-File-Format-Specifications
