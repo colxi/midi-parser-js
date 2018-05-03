@@ -5,14 +5,15 @@
 [![Browser](https://img.shields.io/badge/browser-compatible-blue.svg)](https://github.com/colxi/midi-parser-js)
 [![Node](https://img.shields.io/badge/node-compatible-brightgreen.svg)](https://www.npmjs.com/package/midi-parser-js)
 
-MidiParser is a Javascript **Binary MIDI files** reader, for Browsers and NODEjs. Converts MIDI binary files to Javascript Structured Objects, easier to iterate and interact with.
+MidiParser is a Javascript **Binary MIDI file** reader, for Browsers and Node, wich converts the binary data structures  to **JSON Objects**, much easier to iterate and interact with.
 
-**It can  Parse ```BASE64``` encoded .mid data, or ```UINT8``` array data structures from a raw **.mid** binary.**
+> **It accepts ```BASE64``` encoded Midi data, or the resulting ```UINT8``` arrayBuffer, obtained after reading a raw  .mid binary** 
+
+>**As a bonus it can automatically handle files selected with a  ```FileInput Element``` in the browser.** 
 
 
 ## Syntax:
 
-MidiParser.js accepts two different MIDI data sources. It can handle data encoded with **BASE64** or contained in an **UINT8 Array**, or it can get the data from the selected file with a **File Input Element**, as soon as the event is fired, when the user selects the file. 
 
 > MidiParser.parse( input [, callback] );
 
@@ -59,8 +60,8 @@ Output_Object{
   		   metaType: (int),
   		   type: (int),
   		 },
-  		 [1] : Object{...},		// EVENT 2
-  		 [2] : Object{...},		// EVENT 3
+         [1] : Object{...},	    // EVENT 2
+         [2] : Object{...},		// EVENT 3
   		 // ...
   	  ]
     },
@@ -82,7 +83,7 @@ The following methods are available to use MidiParser.js :
 
 - Include this library in your HTML head using the CDN :
 
-> https://cdn.rawgit.com/colxi/midi-parser-js/84bcf944/src/midi-parser.js
+> https://gitcdn.link/repo/colxi/midi-parser-js/master/src/midi-parser.js
 
 - Use NPM to install the package :
 
