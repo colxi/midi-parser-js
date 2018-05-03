@@ -1,7 +1,7 @@
 {
     "name": "midi-parser-js",
-    "description": "Read .mid binary files or base64 encoded MIDI data, and converts data (Tracks and Events) to Javascript structured Object. Works in BROWSER and as a NODEjs MODULE. ",
-    "version": "3.0.3",
+    "description": "JSON Human readable MIDI sequences. Read from ArrayBuffers, Base64 encoded strings, or FileInput Element in Browsers.",
+    "version": "3.1.3",
     "keywords": [
         "midi",
         "MIDI",
