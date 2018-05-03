@@ -7,9 +7,7 @@
 
 MidiParser is a Javascript **Binary MIDI file** reader, for Browsers and Node, wich converts the binary data structures  to **JSON Objects**, much easier to iterate and interact with.
 
-> **It accepts ```BASE64``` encoded Midi data, or the resulting ```UINT8``` arrayBuffer, obtained after reading a raw  .mid binary** 
-
->**As a bonus it can automatically handle files selected with a  ```FileInput Element``` in the browser.** 
+> **It accepts ```BASE64``` encoded Midi data, or the resulting ```UINT8``` arrayBuffer, obtained after reading a raw  .mid binary.  It also, can automatically handle files selected with a  ```FileInput Element``` in the browser.** 
 
 
 ## Syntax:
