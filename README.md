@@ -5,7 +5,7 @@
 [![Browser](https://img.shields.io/badge/browser-compatible-blue.svg)](https://github.com/colxi/midi-parser-js)
 [![Node](https://img.shields.io/badge/node-compatible-brightgreen.svg)](https://www.npmjs.com/package/midi-parser-js)
 
-MidiParser is a Javascript **Binary MIDI file** reader, for Browsers and Node, wich converts the binary data structures  to **JSON Objects**, much easier to iterate and interact with.
+MidiParser is a Javascript **Binary MIDI file** reader for the browser and Node which converts the binary data structure to **a JSON object**, making it much easier to iterate over and interact with.
 
 > **It accepts ```BASE64``` encoded Midi data, or the resulting ```UINT8``` arrayBuffer, obtained after reading a raw  .mid binary.  It also, can automatically handle files selected with a  ```FileInput Element``` in the browser.** 
 
@@ -34,9 +34,9 @@ However you can provide a custom hook function to be executed when any non-stand
 
 - **msgType** : Hex value of the message type
  
-- **arrayBuffer** : dataview of the midi data. You have to extract your value/s from it, moving the pointer as needed.
+- **arrayBuffer** : Dataview of the midi data. You have to extract your value/s from it, moving the pointer as needed.
 
-- **metaEventLength** : When is >0 you received a metamessage
+- **metaEventLength** : A length greater than 0 indicates a received message
 
 > If you want the default action to be executed, return **false**
 
@@ -69,7 +69,7 @@ Output_Object{
   ]
 }
 ```
-The data from **Event 12** of **Track 2** could be easilly readed with:
+The data from **Event 12** of **Track 2** can be read like this:
 ```javascript
 Output_Object.track[2].event[12].data;
 ```
