@@ -248,7 +248,10 @@ const MIDIParser  = {
                             break;
                         case 0x01:                                              // Text Event
                         case 0x02:                                              // Copyright Notice
-                        case 0x03:                                              // Sequence/Track Name (documentation: http://www.ta7.de/txt/musik/musi0006.htm)
+                        case 0x03:
+                        case 0x04:                                              // Instrument Name
+                        case 0x05:                                              // Lyrics)
+                        case 0x07:                                              // Cue point                                         // Sequence/Track Name (documentation: http://www.ta7.de/txt/musik/musi0006.htm)
                         case 0x06:                                              // Marker
                             MIDI.track[t-1].event[e-1].data = file.readStr(metaEventLength);
                             break;
@@ -291,13 +294,13 @@ const MIDIParser  = {
                 //
                 // IS REGULAR EVENT
                 //
-                else{                                                          // MIDI Control Events OR System Exclusive Events
+                else{                                                           // MIDI Control Events OR System Exclusive Events
                     statusByte = statusByte.toString(16).split('');             // split the status byte HEX representation, to obtain 4 bits values
                     if(!statusByte[1]) statusByte.unshift('0');                 // force 2 digits
                     MIDI.track[t-1].event[e-1].type = parseInt(statusByte[0], 16);// first byte is EVENT TYPE ID
                     MIDI.track[t-1].event[e-1].channel = parseInt(statusByte[1], 16);// second byte is channel
                     switch(MIDI.track[t-1].event[e-1].type){
-                        case 0xF:{                                               // System Exclusive Events
+                        case 0xF:{                                              // System Exclusive Events
 
                             // if user provided a custom interpreter, call it
                             // and assign to event the returned data
