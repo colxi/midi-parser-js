@@ -1,64 +1,21 @@
 /*
-    Project Name: midi-parser-js
-    Author: colxi
-    Author URI: http://www.colxi.info/
-    Description: MIDIParser library reads .MID binary files, Base64 encoded MIDI Data,
+    Project Name : midi-parser-js
+    Project Url  : https://github.com/colxi/midi-parser-js/
+    Author       : colxi
+    Author URL   : http://www.colxi.info/
+    Description  : MIDIParser library reads .MID binary files, Base64 encoded MIDI Data,
     or UInt8 Arrays, and outputs as a readable and structured JS object.
-
-    ---     Usage Methods      ---
-    ------------------------------
-
-    * OPTION 1 NEW! (MIDIParser.parse)
-    Will autodetect the source and proccess the data, using the suitable method.
-
-    * OPTION 2 (MIDIParser.addListener)
-    INPUT ELEMENT LISTENER : call MIDIParser.addListener(fileInputElement,callbacFunction) function, setting the
-    Input File HTML element that will handle the file.mid opening, and callback function
-    that will recieve the resulting Object formated, set of data.
-
-    * OPTION 3 (MIDIParser.Uint8)
-    Provide your own UInt8 Array to MIDIParser.Uint8(), to get an Object formated, set of data
-
-    * OPTION 4 (MIDIParser.Base64)
-    Provide a Base64 encoded Data to MIDIParser.Base64(), , to get an Object formated, set of data
-
-
-    ---  Output Object Specs   ---
-    ------------------------------
-
-    MIDIObject{
-        formatType: 0|1|2,                  // Midi format type
-        timeDivision: (int),                // song tempo (bpm)
-        tracks: (int),                      // total tracks count
-        track: Array[
-            [0]: Object{                    // TRACK 1!
-                event: Array[               // Midi events in track 1
-                    [0] : Object{           // EVENT 1
-                        data: (string),
-                        deltaTime: (int),
-                        metaType: (int),
-                        type: (int),
-                    },
-                    [1] : Object{...}       // EVENT 2
-                    [2] : Object{...}       // EVENT 3
-                    ...
-                ]
-            },
-            [1] : Object{...}
-            [2] : Object{...}
-            ...
-        ]
-    }
-
-Data from Event 12 of Track 2 could be easilly readed with:
-OutputObject.track[2].event[12].data;
-
 */
 
 
 'use strict';
 
-// CROSSBROWSER & NODEjs POLYFILL for ATOB() - By: https://github.com/MaxArt2501 (modified)
+/**
+ * CROSSBROWSER & NODEjs POLYFILL for ATOB() -
+ * By: https://github.com/MaxArt2501 (modified)
+ * @param  {string} string [description]
+ * @return {[type]}        [description]
+ */
 const _atob = function(string) {
     // base64 character set, plus padding character (=)
     let b64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
@@ -88,20 +45,34 @@ const _atob = function(string) {
     return result;
 };
 
+
+/**
+ * [MIDIParser description]
+ * @type {Object}
+ */
 const MIDIParser  = {
     // debug (bool), when enabled will log in console unimplemented events
     // warnings and internal handled errors.
     debug: false,
 
+    /**
+     * [parse description]
+     * @param  {[type]} input     [description]
+     * @param  {[type]} _callback [description]
+     * @return {[type]}           [description]
+     */
     parse: function(input, _callback){
         if(input instanceof Uint8Array) return MIDIParser.Uint8(input);
         else if(typeof input === 'string') return MIDIParser.Base64(input);
         else if(input instanceof HTMLElement && input.type === 'file') return MIDIParser.addListener(input , _callback);
         else throw new Error('MIDIParser.parse() : Invalid input provided');
     },
-    // addListener() should be called in order attach a listener to the INPUT HTML element
-    // that will provide the binary data automating the conversion, and returning
-    // the structured data to the provided callback function.
+
+    /**
+     * addListener() should be called in order attach a listener to the INPUT HTML element
+     * that will provide the binary data automating the conversion, and returning
+     * the structured data to the provided callback function.
+     */
     addListener: function(_fileElement, _callback){
         if(!File || !FileReader) throw new Error('The File|FileReader APIs are not supported in this browser. Use instead MIDIParser.Base64() or MIDIParser.Uint8()');
 
@@ -126,8 +97,10 @@ const MIDIParser  = {
         });
     },
 
-    // convert baset4 string into uint8 array buffer, before performing the
-    // parsing subroutine.
+    /**
+     * Base64() : convert baset4 string into uint8 array buffer, before performing the
+     * parsing subroutine.
+     */
     Base64 : function(b64String){
         b64String = String(b64String);
 
@@ -139,9 +112,11 @@ const MIDIParser  = {
         return  MIDIParser.Uint8(t_array) ;
     },
 
-    // parse() function reads the binary data, interpreting and spliting each chuck
-    // and parsing it to a structured Object. When job is finised returns the object
-    // or 'false' if any error was generated.
+    /**
+     * parse() : function reads the binary data, interpreting and spliting each chuck
+     * and parsing it to a structured Object. When job is finised returns the object
+     * or 'false' if any error was generated.
+     */
     Uint8: function(FileAsUint8Array){
         let file = {
             data: null,
@@ -353,10 +328,13 @@ const MIDIParser  = {
         return MIDI;
     },
 
-    // custom function t handle unimp,emented, or custom midi messages.If message
-    // is a metaevent, the value of metaEventLength will be >0.
-    // Function must return the value to store, and pointer of dataView incresed
-    // If default action wants to be performed, return false
+    /**
+     * custom function to handle unimplemented, or custom midi messages.
+     * If message is a meta-event, the value of metaEventLength will be >0.
+     * Function must return the value to store, and pointer of dataView needs
+     * to be manually increased
+     * If you want default action to be performed, return false
+     */
     customInterpreter : null // function( e_type , arrayByffer, metaEventLength){ return e_data_int }
 };
 

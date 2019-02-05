@@ -1,4 +1,4 @@
-![logo](https://cdn.rawgit.com/colxi/midi-parser-js/7e083d58/logo.png)
+![logo](https://cdn.jsdelivr.net/gh/colxi/midi-parser-js@7e083d58cad77366c4edbba9712451a931ed163c/logo.png)
 
 # MidiParser.js 
 [![NoDependencies](https://img.shields.io/badge/dependencies-none-green.svg)](https://github.com/colxi/midi-parser-js)
@@ -8,6 +8,9 @@
 MidiParser is a Javascript **Binary MIDI file** reader for the browser and Node which converts the binary data structure to **a JSON object**, making it much easier to iterate over and interact with.
 
 > **It accepts ```BASE64``` encoded Midi data, or the resulting ```UINT8``` arrayBuffer, obtained after reading a raw  .mid binary.  It also, can automatically handle files selected with a  ```FileInput Element``` in the browser.** 
+
+
+![img](https://cdn.jsdelivr.net/gh/colxi/midi-parser-js/docs/diagram.jpg)
 
 
 ## Syntax:
@@ -27,7 +30,6 @@ MidiParser is a Javascript **Binary MIDI file** reader for the browser and Node 
 
 By default, the library ignores the sysEx, and non-standard messages, simply converting their values to integers (when possible).
 However you can provide a custom hook function to be executed when any non-standard message is found, and process it by your own, returning the resulting value.
-
 
 
 > MidiParser.customInterpreter = function( msgType, arrayBuffer, metaEventLength){  /** your code ** / }
