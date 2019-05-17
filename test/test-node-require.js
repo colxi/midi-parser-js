@@ -1,5 +1,5 @@
 var fs = require('fs')
-var midiParser  = require('../src/midi-parser.js');
+var midiParser  = require('../src/main.js');
 
 console.log("Reading ./test.mid as base64...")
 fs.readFile('./test.mid', 'base64', function (err,data) {

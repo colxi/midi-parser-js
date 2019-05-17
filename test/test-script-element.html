@@ -1,0 +1,27 @@
+<html>
+<head>
+<script src="../src/main.js"></script>
+<script>
+    window.onload = function(){
+        // configure MIDIReader
+        var source = document.getElementById('filereader');
+        MidiParser.parse( source, function(obj){
+            // Your callback function
+            console.log(obj);
+            document.getElementById("output").innerHTML = JSON.stringify(obj, undefined, 2);
+        });
+    };
+</script>
+
+</head>
+<body>
+    <div style="background:grey; padding:20px;">
+        <h3>MIDIReader: Parse from File (INPUT element)</h3>
+        <input type="file" id="filereader"/>
+    </div>
+    <div style="background:lightgrey; padding:20px;">
+        <h3>Parsed Output :</h3>
+        <pre id="output" style="font-size:10px;">-select a .mid file-</pre>
+    </div>
+<body>
+</html>

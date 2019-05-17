@@ -1,11 +1,11 @@
 <html>
 <head>
-<script src="../src/midi-parser.js"></script>
-<script>
+<script type="module">
+    import {MidiParser} from '../src/midi-parser.js'
     window.onload = function(){
         // configure MIDIReader
         var source = document.getElementById('filereader');
-        MIDIParser.parse( source, function(obj){
+        MidiParser.parse( source, function(obj){
             // Your callback function
             console.log(obj);
             document.getElementById("output").innerHTML = JSON.stringify(obj, undefined, 2);
