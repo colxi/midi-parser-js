@@ -1,7 +1,7 @@
 {
     "name": "midi-parser-js",
     "description": "JSON Human readable MIDI sequences. Read from ArrayBuffers, Base64 encoded strings, or FileInput Element in Browsers.",
-    "version": "4.0.3",
+    "version": "4.0.4",
     "main" : "./src/main.js",
     "keywords": [
         "midi json",
