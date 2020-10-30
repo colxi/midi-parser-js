@@ -36,7 +36,7 @@ fs.readFile('./test.mid', 'base64', function (err,data) {
 Example in Browser...
 ```html
 <script type="module">
-  import {MidiParser} from 'midi-parser.js'
+  import MidiParser from 'midi-parser.js'
   // select the INPUT element that will handle
   // the file selection.
   let source = document.getElementById('filereader');
