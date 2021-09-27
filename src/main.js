@@ -260,7 +260,6 @@
                                 // if no customInterpretr is provided, or returned
                                 // false (=apply default), perform default action
                                 if(this.customInterpreter === null || MIDI.track[t-1].event[e-1].data === false){
-                                    file.readInt(metaEventLength);
                                     MIDI.track[t-1].event[e-1].data = file.readInt(metaEventLength);
                                     if (this.debug) console.info('Unimplemented 0xFF meta event! data block readed as Integer');
                                 }
