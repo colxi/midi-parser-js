@@ -100,7 +100,7 @@ outputObject{
 ........[0]: Object{  // TRACK 1!
 ............event: Array[  // Midi events in track 1
 ................[0] : Object{  // EVENT 1
-....................data: (string),
+....................data: (int|Array[int]),
 ....................deltaTime: (int),
 ....................metaType: (int),
 ....................type: (int)
