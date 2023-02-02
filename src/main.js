@@ -30,7 +30,7 @@
         if (!b64re.test(string))
             throw new TypeError('Failed to execute _atob() : The string to be decoded is not correctly encoded.');
 
-        // Adding the padding if missing, for semplicity
+        // Adding the padding if missing, for simplicity
         string += '=='.slice(2 - (string.length & 3));
         let bitmap, result = '';
         let r1, r2, i = 0;
